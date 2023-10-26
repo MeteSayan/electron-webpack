@@ -85,7 +85,7 @@ export class BaseTarget {
       plugins.push(new WebpackRemoveOldAssetsPlugin(dllManifest))
     }
 
-    optimization.noEmitOnErrors = true
+    optimization.emitOnErrors = false
 
     const additionalEnvironmentVariables = Object.keys(process.env).filter(it => it.startsWith("ELECTRON_WEBPACK_"))
     if (additionalEnvironmentVariables.length > 0) {
@@ -114,7 +114,7 @@ function configureDevelopmentPlugins(configurator: WebpackConfigurator) {
     optimization.moduleIds = 'named'
   }
   else {
-    optimization.namedModules = true
+    optimization.moduleIds = 'named'
   }
 
   const plugins = configurator.plugins

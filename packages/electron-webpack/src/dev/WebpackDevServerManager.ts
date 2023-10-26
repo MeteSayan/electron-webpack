@@ -10,9 +10,9 @@ const debug = require("debug")("electron-webpack")
 
 function runWds(projectDir: string, env: any) {
   const isWin = process.platform === "win32"
-  const webpackDevServerPath = require.resolve(path.join(".bin", "webpack-dev-server" + (isWin ? ".cmd" : "")))
+  const webpackDevServerPath = require.resolve(path.join(".bin", "webpack" + (isWin ? ".cmd" : "")))
   debug(`Start renderer WDS ${webpackDevServerPath} on ${env.ELECTRON_WEBPACK_WDS_PORT} port`)
-  return run(webpackDevServerPath, ["--color", "--env.autoClean=false", "--config", path.join(__dirname, "../../webpack.renderer.config.js")], {
+  return run(webpackDevServerPath, ["serve", "--color", "--env", "autoClean=false", "--config", path.join(__dirname, "../../webpack.renderer.config.js")], {
     env,
     cwd: projectDir,
   })

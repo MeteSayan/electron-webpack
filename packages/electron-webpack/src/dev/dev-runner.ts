@@ -4,7 +4,7 @@ import { spawn } from "child_process"
 import { readdir, remove } from "fs-extra"
 import * as path from "path"
 import "source-map-support/register"
-import webpack, { Compiler } from "webpack"
+import webpack, { Compiler, Watching } from "webpack"
 import { getElectronWebpackConfiguration, getPackageMetadata } from "../config"
 import { HmrServer } from "../electron-main-hmr/HmrServer"
 import { configure } from "../main"
@@ -91,7 +91,7 @@ class DevRunner {
       },
     })
 
-    await new Promise((resolve: (() => void) | null, reject: ((error: Error) => void) | null) => {
+    await new Promise((resolve: ((value: unknown) => void), reject: ((error?: any) => void)) => {
       const compiler: Compiler = webpack(mainConfig!!)
 
       const printCompilingMessage = new DelayedFunction(() => {
@@ -102,7 +102,8 @@ class DevRunner {
         printCompilingMessage.schedule()
       })
 
-      let watcher: Compiler.Watching | null = compiler.watch({}, (error, stats) => {
+      let watcher: Watching | null = compiler.watch({}, (error, stats) => {
+        if (!stats) return
         printCompilingMessage.cancel()
 
         if (watcher == null) {
@@ -115,7 +116,7 @@ class DevRunner {
           }
           else {
             reject(error)
-            reject = null
+            reject = () => {}
           }
           return
         }
@@ -125,8 +126,8 @@ class DevRunner {
         }), chalk.yellow)
 
         if (resolve != null) {
-          resolve()
-          resolve = null
+          resolve(undefined)
+          resolve = () => {}
           return
         }
 

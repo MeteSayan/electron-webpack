@@ -54,7 +54,7 @@ function statToMatchObject(stats: Stats, projectDir: string, fs: MemoryFS) {
   if (stats.hasErrors()) {
     console.log(stats.toString({colors: true}))
     // console.log("FS data: " + util.inspect(fs, {colors: true}))
-    throw new Error(stats.toJson().errors.join("\n"))
+    throw new Error(stats.toJson().errors?.join("\n"))
   }
 
   // skip first 3 lines - Hash, Version and Time
@@ -77,6 +77,7 @@ function compile(fs: any, configuration: Configuration, resolve: (stats: Stats) 
   const compiler = webpack(configuration)
   compiler.outputFileSystem = fs
   compiler.run((error, stats) => {
+    if (!stats) return
     if (error != null) {
       reject(error)
       return
